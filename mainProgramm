@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <wiringPi.h>
+#include <unistd.h>
+#include <time.h>
+
+#define trig 23
+#define echo 24
+#define BeepPin 0
+
+int main(void) {
+  
+  if(wiringPiSetup() ==-1){
+    printf("setup wiringPi failed.");
+    return -1;
+  }
+
+  wiringPiSetupGpio();
+  pinMode(echo,INPUT);
+  pinMode(trig,OUTPUT);
+  pinMode(BeepPin, OUTPUT);
+  
+  while(1){
+    digitalWrite(trig,LOW);
+    printf("Ölçüm yapılıyor...");
+    delay(50);
+    digitalWrite(trig,HIGH);
+    delay(50);
+    digitalWrite(trig,LOW);
+    
+    long_int start_i;
+    timer_t start;
+    long int stop_i;
+    time_t stop;
+    
+    while(digitalRead(echo)==0){
+      start = micros();
+    }
+    while(digitalRead(echo)==1){
+      stop = micros();
+    }
+
+    start_i = (long int)start;
+    stop_i = (long int) stop;
+    long int distance = stop_i - start_i;
+   
+    distance = (distance*17)/1000;
+    printf("Mesafe: %d\n", distance);
+    if(distance<5){
+      digitalWrite(BeepPin,LOW);
+      delay(2);
+      digitalWrite(BeepPin,HIGH);
+      delay(2);
+    }
+  }
+  return 0;
+}
